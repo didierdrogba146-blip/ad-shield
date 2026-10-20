@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ad Shield architecture</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #f5f5f5;
+      --color-ink:     #2d3142;
+      --color-muted:   #4f5d75;
+      --color-accent:  #bf4520;
+      --font-sans:     'Geist', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+    .frame { max-width: 1200px; width: 100%; }
+    .diagram-container { width: 100%; overflow-x: auto; }
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 1.5rem;
+    }
+    svg { width: 100%; min-width: 960px; display: block; }
+    @media print {
+      .diagram-container { overflow-x: visible; }
+      svg { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Architecture · Ad Shield</p>
+    <h1>How Ad Shield blocks ads in the browser</h1>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 960 540" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="architecture-title architecture-desc">
+        <title id="architecture-title">How Ad Shield blocks ads in the browser</title>
+        <desc id="architecture-desc">Page requests pass through Brave Shields with the Ad Shield filter list and then the extension's network rules; the extension's page layer reports each click to the tab layer, which keeps genuine new tabs and closes and logs ad tabs.</desc>
+        <defs>
+          <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+          <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#bf4520"/></marker>
+        </defs>
+
+        <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+        <!-- Zone: the extension -->
+        <rect x="404" y="88" width="396" height="352" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+        <rect x="532" y="92" width="140" height="12" rx="2" fill="#f5f5f5"/>
+        <text x="602" y="101" fill="#5a6580" font-size="7" font-family="Geist Mono, monospace" text-anchor="middle" letter-spacing="0.14em">AD SHIELD EXTENSION · MV3</text>
+
+        <!-- Arrows (drawn before nodes) -->
+        <!-- Web page -> Shields + filter list -->
+        <line x1="144" y1="152" x2="212" y2="152" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <rect x="150" y="128" width="56" height="12" rx="2" fill="#f5f5f5"/>
+        <text x="178" y="137" fill="#4f5d75" font-size="7.5" font-family="Geist Mono, monospace" text-anchor="middle" letter-spacing="0.08em">REQUESTS</text>
+
+        <!-- Shields -> Network rules -->
+        <line x1="380" y1="152" x2="428" y2="152" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+        <!-- Network rules -> Page layer -->
+        <line x1="572" y1="152" x2="620" y2="152" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+        <!-- Web page -> Tab layer: new tabs and redirects -->
+        <path d="M 84,184 V 360 Q 84,368 92,368 H 428" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <rect x="236" y="346" width="64" height="12" rx="2" fill="#f5f5f5"/>
+        <text x="268" y="355" fill="#4f5d75" font-size="7.5" font-family="Geist Mono, monospace" text-anchor="middle" letter-spacing="0.08em">NEW TAB</text>
+
+        <!-- Page layer -> Tab layer: click intent -->
+        <path d="M 664,184 V 292 Q 664,300 656,300 H 516 Q 508,300 508,308 V 332" fill="none" stroke="#bf4520" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+        <rect x="552" y="280" width="76" height="12" rx="2" fill="#f5f5f5"/>
+        <text x="590" y="289" fill="#bf4520" font-size="7.5" font-family="Geist Mono, monospace" text-anchor="middle" letter-spacing="0.08em">CLICK INTENT</text>
+
+        <!-- Tab layer -> Keep -->
+        <path d="M 588,356 H 700 Q 708,356 708,348 V 328 Q 708,320 716,320 H 828" fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <!-- Tab layer -> Close & log -->
+        <path d="M 588,380 H 700 Q 708,380 708,388 V 408 Q 708,416 716,416 H 828" fill="none" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+
+        <!-- Nodes -->
+        <!-- Web page (input) -->
+        <rect x="24" y="120" width="120" height="64" rx="6" fill="#f5f5f5"/>
+        <rect x="24" y="120" width="120" height="64" rx="6" fill="rgba(79,93,117,0.10)" stroke="#5a6580" stroke-width="1"/>
+        <text x="84" y="148" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">Web page</text>
+        <text x="84" y="166" fill="#5a6580" font-size="8" font-family="Geist Mono, monospace" text-anchor="middle">scripts · frames · links</text>
+
+        <!-- Brave Shields + filter list (focal) -->
+        <rect x="212" y="112" width="168" height="80" rx="6" fill="#f5f5f5"/>
+        <rect x="212" y="112" width="168" height="80" rx="6" fill="rgba(191,69,32,0.08)" stroke="#bf4520" stroke-width="1.2"/>
+        <rect x="224" y="122" width="62" height="13" rx="2" fill="#bf4520"/>
+        <text x="255" y="131" fill="#f5f5f5" font-size="7" font-family="Geist Mono, monospace" text-anchor="middle" letter-spacing="0.1em">NATIVE</text>
+        <text x="296" y="154" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">Brave Shields</text>
+        <text x="296" y="170" fill="#2d3142" font-size="11" font-family="Geist, sans-serif" text-anchor="middle">+ Ad Shield filter list</text>
+        <text x="296" y="184" fill="#5a6580" font-size="8" font-family="Geist Mono, monospace" text-anchor="middle">filters/ad-shield.txt</text>
+
+        <!-- Network rules -->
+        <rect x="428" y="120" width="144" height="64" rx="6" fill="#f5f5f5"/>
+        <rect x="428" y="120" width="144" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+        <text x="500" y="148" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">Network rules</text>
+        <text x="500" y="166" fill="#5a6580" font-size="8" font-family="Geist Mono, monospace" text-anchor="middle">rules.json</text>
+
+        <!-- Page layer -->
+        <rect x="620" y="120" width="156" height="64" rx="6" fill="#f5f5f5"/>
+        <rect x="620" y="120" width="156" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+        <text x="698" y="144" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">Page layer</text>
+        <text x="698" y="160" fill="#5a6580" font-size="8" font-family="Geist Mono, monospace" text-anchor="middle">cosmetic.js · cosmetic.css</text>
+        <text x="698" y="174" fill="#5a6580" font-size="8" font-family="Geist Mono, monospace" text-anchor="middle">click traps · link swaps</text>
+
+        <!-- Tab layer (focal) -->
+        <rect x="428" y="332" width="160" height="72" rx="6" fill="#f5f5f5"/>
+        <rect x="428" y="332" width="160" height="72" rx="6" fill="rgba(191,69,32,0.08)" stroke="#bf4520" stroke-width="1.2"/>
+        <rect x="440" y="342" width="56" height="13" rx="2" fill="#bf4520"/>
+        <text x="468" y="351" fill="#f5f5f5" font-size="7" font-family="Geist Mono, monospace" text-anchor="middle" letter-spacing="0.1em">DECIDES</text>
+        <text x="508" y="374" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">Tab layer</text>
+        <text x="508" y="392" fill="#5a6580" font-size="8" font-family="Geist Mono, monospace" text-anchor="middle">background.js</text>
+
+        <!-- Keep -->
+        <rect x="828" y="296" width="112" height="48" rx="6" fill="#f5f5f5"/>
+        <rect x="828" y="296" width="112" height="48" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+        <text x="884" y="316" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">Keep</text>
+        <text x="884" y="332" fill="#5a6580" font-size="8" font-family="Geist Mono, monospace" text-anchor="middle">sign-in · clicked link</text>
+
+        <!-- Close & log -->
+        <rect x="828" y="392" width="112" height="48" rx="6" fill="#f5f5f5"/>
+        <rect x="828" y="392" width="112" height="48" rx="6" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.30)" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="884" y="412" fill="#2d3142" font-size="12" font-weight="600" font-family="Geist, sans-serif" text-anchor="middle">Close &amp; log</text>
+        <text x="884" y="428" fill="#5a6580" font-size="8" font-family="Geist Mono, monospace" text-anchor="middle">"Open" in the popup</text>
+
+        <!-- Legend strip -->
+        <line x1="24" y1="476" x2="936" y2="476" stroke="rgba(45,49,66,0.12)" stroke-width="0.8"/>
+        <rect x="24" y="494" width="16" height="12" rx="2" fill="rgba(191,69,32,0.08)" stroke="#bf4520" stroke-width="1"/>
+        <text x="48" y="503" fill="#4f5d75" font-size="8" font-family="Geist Mono, monospace">FOCAL: WHERE ADS ARE STOPPED</text>
+        <rect x="232" y="494" width="16" height="12" rx="2" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+        <text x="256" y="503" fill="#4f5d75" font-size="8" font-family="Geist Mono, monospace">COMPONENT</text>
+        <rect x="340" y="494" width="16" height="12" rx="2" fill="rgba(79,93,117,0.10)" stroke="#5a6580" stroke-width="1"/>
+        <text x="364" y="503" fill="#4f5d75" font-size="8" font-family="Geist Mono, monospace">INPUT</text>
+        <line x1="420" y1="500" x2="452" y2="500" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4"/>
+        <text x="460" y="503" fill="#4f5d75" font-size="8" font-family="Geist Mono, monospace">BLOCKED PATH</text>
+      </svg>
+    </div>
+  </div>
+</body>
+</html>

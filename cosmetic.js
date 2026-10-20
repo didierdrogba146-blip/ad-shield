@@ -32,7 +32,7 @@
     if (el === document.documentElement || el === document.body) return false;
     // Transparent backdrops behind menus and dialogs (Material, Angular CDK,
     // Bootstrap...) close the menu on an outside click; they are not traps.
-    if (/backdrop|cdk-overlay|modal|dialog|drawer|scrim/i.test((el.className || '') + ' ' + el.id)) return false;
+    if (/backdrop|scrim|cdk-overlay/i.test((typeof el.className === 'string' ? el.className : '') + ' ' + el.id)) return false;
     const cs = getComputedStyle(el);
     if (cs.position !== 'fixed' && cs.position !== 'absolute') return false;
     if (cs.pointerEvents === 'none' || cs.display === 'none' || cs.visibility === 'hidden') return false;
@@ -67,6 +67,15 @@
     // Direct children of body and inline-positioned elements are enough, and cheap.
     const cands = document.body.querySelectorAll('body > *, [style*="fixed"], [style*="z-index"]');
     for (const el of cands) if (!el.hasAttribute('data-as-removed') && isTrapOverlay(el)) neutralize(el);
+    // Overlays positioned through stylesheet classes are found by probing what
+    // sits on top at a few points of the viewport.
+    const w = innerWidth, h = innerHeight;
+    for (const [x, y] of [[w / 2, h / 2], [w / 4, h / 4], [3 * w / 4, 3 * h / 4]]) {
+      const top = document.elementFromPoint(x, y);
+      for (let el = top; el && el !== document.body; el = el.parentElement) {
+        if (!el.hasAttribute('data-as-removed') && isTrapOverlay(el)) { neutralize(el); break; }
+      }
+    }
   }
 
   let scheduled = false;
@@ -80,7 +89,6 @@
 
   // Hyperlink tampering: if a script rewrites a same-site link to another site
   // after load, remember the original address and go there on click.
-  const base = (h) => h.split('.').slice(-2).join('.');
   const originalHref = new WeakMap();
   new MutationObserver((muts) => {
     for (const m of muts) {
@@ -88,7 +96,7 @@
       if (a.tagName !== 'A' || !m.oldValue) continue;
       try {
         const before = new URL(m.oldValue, location.href), after = new URL(a.href);
-        if (base(before.hostname) === base(location.hostname) && base(after.hostname) !== base(location.hostname)) {
+        if (sameSite(before.hostname, location.hostname) && !sameSite(after.hostname, location.hostname)) {
           if (!originalHref.has(a)) originalHref.set(a, before.href);
         }
       } catch (e) {}
@@ -140,12 +148,22 @@
     }
     try { chrome.runtime.sendMessage({ t: 'click', ...info }); } catch (err) {}
     if (info.trap) {
-      // Swallow the click on the trap and remove it; the next click reaches
-      // the real content.
+      // Swallow the click on the trap and remove it, then hand the click to
+      // whatever was underneath so the user does not have to click twice.
       e.preventDefault();
       e.stopImmediatePropagation();
       const t = e.composedPath().find((n) => n instanceof HTMLElement && isTrapOverlay(n));
       if (t) neutralize(t);
+      // Only when an overlay was removed: a page-sized ad link has nothing
+      // underneath worth clicking, and clicking "under" would hit the ad again.
+      if (t && e.type === 'click') {
+        const under = document.elementFromPoint(e.clientX, e.clientY);
+        // Cross-origin frames (video players) cannot be clicked from here;
+        // the next real click reaches them because the trap is gone.
+        if (under && under.tagName !== 'IFRAME' && under !== document.body && under !== document.documentElement) {
+          under.click();
+        }
+      }
     }
   };
   for (const type of ['pointerdown', 'mousedown', 'click', 'auxclick']) {

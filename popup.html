@@ -3,14 +3,20 @@
 <head>
 <meta charset="utf-8">
 <style>
-  body { font: 13px -apple-system, system-ui, sans-serif; width: 260px; margin: 0; padding: 14px; background: #1b1d22; color: #e8e8ea; }
+  body { font: 13px -apple-system, system-ui, sans-serif; width: 300px; margin: 0; padding: 14px; background: #1b1d22; color: #e8e8ea; }
   h1 { font-size: 15px; margin: 0 0 10px; }
+  h2 { font-size: 12px; margin: 14px 0 6px; color: #9aa0a6; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
   .site { color: #9aa0a6; margin-bottom: 12px; word-break: break-all; }
   .row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #2c2f36; }
   .row b { color: #7fd17f; }
-  button { margin-top: 14px; width: 100%; padding: 9px; border: 0; border-radius: 6px; font-weight: 600; cursor: pointer; }
+  button { width: 100%; padding: 9px; border: 0; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 8px; }
   .on { background: #3a3d45; color: #e8e8ea; }
   .off { background: #2e7d32; color: #fff; }
+  ul { list-style: none; margin: 0; padding: 0; max-height: 160px; overflow-y: auto; }
+  li { display: flex; gap: 6px; align-items: center; padding: 4px 0; border-bottom: 1px solid #2c2f36; }
+  li span { flex: 1; font-size: 11px; color: #c4c7cc; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  li button { width: auto; margin: 0; padding: 3px 8px; font-size: 11px; background: #3a3d45; color: #e8e8ea; }
+  .empty { font-size: 11px; color: #80868b; }
   .note { font-size: 11px; color: #80868b; margin-top: 10px; }
 </style>
 </head>
@@ -20,8 +26,13 @@
   <div class="row"><span>Blocked requests</span><b id="requests">0</b></div>
   <div class="row"><span>Ad tabs closed</span><b id="popups">0</b></div>
   <div class="row"><span>Click traps removed</span><b id="overlays">0</b></div>
+
+  <h2>Blocked pop-ups on this tab</h2>
+  <ul id="blocked"></ul>
+
+  <button id="popupToggle"></button>
   <button id="toggle"></button>
-  <div class="note">If a site breaks, turn the shield off for that site only. The page reloads.</div>
+  <div class="note">Blocked something you wanted? Press Open next to it, or allow pop-ups for this site. Changes reload the page.</div>
   <script src="popup.js"></script>
 </body>
 </html>

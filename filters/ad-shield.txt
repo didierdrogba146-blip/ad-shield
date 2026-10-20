@@ -1,0 +1,31 @@
+! Title: Ad Shield filters
+! Description: Rules found by reverse engineering ad loaders on streaming sites. Works in Brave Shields, uBlock Origin and AdGuard.
+! Expires: 2 days
+! License: The Unlicense (public domain)
+! Homepage: https://github.com/<owner>/ad-shield
+
+! --- First-party ad folder used by a family of streaming sites ---
+! The loader injects banner frames, a pre-roll, a video overlay and a sticky
+! bottom bar from this folder on the site's own domain.
+*/rek/road/*$document,subdocument,script,image,media
+/rek/road/media/*$image
+
+! --- The loader itself (base64-wrapped, delays ads by 15 minutes on a first visit) ---
+||720izle.net/assets/js/app-init.js$script
+||filmizle.ink/assets/js/app-init.js$script
+
+! --- Ad video host used for the fake pre-roll ---
+||herdembilgiler.com^
+
+! --- Containers the loader creates; hide them even if a script slips through ---
+##iframe[src*="/rek/road/"]
+##div#hdr_all_banners_wrapper
+##div#video_under_banners_wrapper
+##div#filmcidayicatapult-wrapper
+
+! --- Invisible full-screen click traps (open ad tabs on the first clicks) ---
+##div#kesin-reklam-katmani
+##div#iframe-reklam-katmani
+
+! --- Ad bar the embedded player prepends above the video ---
+###my-video_jw > .alert-dark
