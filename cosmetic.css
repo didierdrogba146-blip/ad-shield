@@ -1,0 +1,47 @@
+/* If the shield is turned off for this site (html[data-as-off]), no rule applies. */
+
+/* --- Common ad slots --- */
+html:not([data-as-off]) ins.adsbygoogle,
+html:not([data-as-off]) [id^="google_ads_"],
+html:not([data-as-off]) [id^="div-gpt-ad"],
+html:not([data-as-off]) iframe[src*="doubleclick.net"],
+html:not([data-as-off]) iframe[src*="googlesyndication"],
+html:not([data-as-off]) iframe[src*="/rek/"],
+html:not([data-as-off]) iframe[src*="/reklam"],
+html:not([data-as-off]) iframe[id^="aswift_"],
+html:not([data-as-off]) a[href*="rebrand.ly/"] > img,
+html:not([data-as-off]) [data-ad-slot],
+html:not([data-as-off]) [data-ad-client],
+html:not([data-as-off]) .adsbox,
+html:not([data-as-off]) .ad-banner,
+html:not([data-as-off]) .ad-container,
+html:not([data-as-off]) .banner-ads,
+html:not([data-as-off]) .reklam,
+html:not([data-as-off]) .reklamlar,
+html:not([data-as-off]) .reklam-alani,
+html:not([data-as-off]) [id^="reklam"],
+html:not([data-as-off]) [class^="reklam-"],
+html:not([data-as-off]) .taboola,
+html:not([data-as-off]) [id^="taboola-"],
+html:not([data-as-off]) .OUTBRAIN,
+html:not([data-as-off]) [id^="mgid_"],
+html:not([data-as-off]) .mgbox {
+  display: none !important;
+}
+
+/* --- Ad structures found through reverse engineering --- */
+html:not([data-as-off]) #kesin-reklam-katmani,
+html:not([data-as-off]) #iframe-reklam-katmani,
+html:not([data-as-off]) #filmcidayicatapult-wrapper,
+html:not([data-as-off]) #hdr_all_banners_wrapper,
+html:not([data-as-off]) #video_under_banners_wrapper,
+html:not([data-as-off]) #my-video_jw > .alert-dark {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+/* Overlays removed by the shield */
+[data-as-removed] {
+  display: none !important;
+  pointer-events: none !important;
+}

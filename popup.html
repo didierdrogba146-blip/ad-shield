@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  body { font: 13px -apple-system, system-ui, sans-serif; width: 260px; margin: 0; padding: 14px; background: #1b1d22; color: #e8e8ea; }
+  h1 { font-size: 15px; margin: 0 0 10px; }
+  .site { color: #9aa0a6; margin-bottom: 12px; word-break: break-all; }
+  .row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #2c2f36; }
+  .row b { color: #7fd17f; }
+  button { margin-top: 14px; width: 100%; padding: 9px; border: 0; border-radius: 6px; font-weight: 600; cursor: pointer; }
+  .on { background: #3a3d45; color: #e8e8ea; }
+  .off { background: #2e7d32; color: #fff; }
+  .note { font-size: 11px; color: #80868b; margin-top: 10px; }
+</style>
+</head>
+<body>
+  <h1>🛡️ Ad Shield</h1>
+  <div class="site" id="site"></div>
+  <div class="row"><span>Blocked requests</span><b id="requests">0</b></div>
+  <div class="row"><span>Ad tabs closed</span><b id="popups">0</b></div>
+  <div class="row"><span>Click traps removed</span><b id="overlays">0</b></div>
+  <button id="toggle"></button>
+  <div class="note">If a site breaks, turn the shield off for that site only. The page reloads.</div>
+  <script src="popup.js"></script>
+</body>
+</html>
