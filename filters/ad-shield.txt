@@ -2,7 +2,7 @@
 ! Description: Rules found by reverse engineering ad loaders on streaming sites. Works in Brave Shields, uBlock Origin and AdGuard.
 ! Expires: 2 days
 ! License: The Unlicense (public domain)
-! Homepage: https://github.com/<owner>/ad-shield
+! Homepage: https://github.com/didierdrogba146-blip/ad-shield
 
 ! --- First-party ad folder used by a family of streaming sites ---
 ! The loader injects banner frames, a pre-roll, a video overlay and a sticky

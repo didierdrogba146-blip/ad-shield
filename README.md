@@ -17,7 +17,8 @@ It has two parts that work together, and either one also works on its own:
 
 ### 1. Filter list (recommended for everyone)
 1. Open `brave://settings/shields/filters`.
-2. Under **Add custom filter lists**, paste the raw URL of `filters/ad-shield.txt` from this repository and click **Add**.
+2. Under **Add custom filter lists**, paste this URL and click **Add**:
+   `https://raw.githubusercontent.com/didierdrogba146-blip/ad-shield/main/filters/ad-shield.txt`
 
 In uBlock Origin, use *Dashboard → Filter lists → Import*. In AdGuard, use *Filters → Custom → Add custom filter*.
 
