@@ -30,6 +30,9 @@
   function isTrapOverlay(el) {
     if (!(el instanceof HTMLElement)) return false;
     if (el === document.documentElement || el === document.body) return false;
+    // Transparent backdrops behind menus and dialogs (Material, Angular CDK,
+    // Bootstrap...) close the menu on an outside click; they are not traps.
+    if (/backdrop|cdk-overlay|modal|dialog|drawer|scrim/i.test((el.className || '') + ' ' + el.id)) return false;
     const cs = getComputedStyle(el);
     if (cs.position !== 'fixed' && cs.position !== 'absolute') return false;
     if (cs.pointerEvents === 'none' || cs.display === 'none' || cs.visibility === 'hidden') return false;
@@ -104,6 +107,14 @@
         else if (n.matches('button, input[type=button], input[type=submit], [role=button], [onclick]')) intent = 'button';
       }
     }
+    // Modern sites make cards clickable with JS listeners and no onclick
+    // attribute; a pointer cursor is the visible sign of a real control.
+    if (intent === 'none' && !trap) {
+      for (const n of path) {
+        if (!(n instanceof HTMLElement) || n === document.body) break;
+        if (getComputedStyle(n).cursor === 'pointer') { intent = 'button'; break; }
+      }
+    }
     // A link wrapping most of the page is a trap as well.
     if (intent === 'link') {
       const a = path.find((n) => n instanceof HTMLElement && n.tagName === 'A');
@@ -140,4 +151,11 @@
   for (const type of ['pointerdown', 'mousedown', 'click', 'auxclick']) {
     addEventListener(type, onClick, { capture: true });
   }
+
+  // Right-click on a link: remember it so "Open link in new tab" is allowed.
+  addEventListener('contextmenu', (e) => {
+    if (!enabled || !e.isTrusted) return;
+    const a = e.composedPath().find((n) => n instanceof HTMLElement && n.tagName === 'A' && n.href);
+    if (a) try { chrome.runtime.sendMessage({ t: 'context', href: originalHref.get(a) || a.href }); } catch (err) {}
+  }, { capture: true });
 })();

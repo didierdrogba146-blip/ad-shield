@@ -77,5 +77,15 @@ Local scenario tests (10 scenarios, 9 passed):
 - A sign-in provider not in the trusted list may be closed if it opens from inside an embedded player. Add it to `TRUSTED` in `background.js`.
 - The gambling-domain pattern also blocks typing those addresses into the address bar yourself.
 
+## Changelog
+**1.2.0**
+- Fix: tabs the user opens (Cmd+T, bookmarks, address bar) were closed as ads.
+- Fix: general-purpose link shorteners shared in emails and posts are no longer treated as ads.
+- Fix: "Open link in new tab" from the right-click menu is allowed.
+- Fix: clickable cards built with JavaScript listeners count as real controls.
+- Fix: transparent backdrops behind menus and dialogs are no longer mistaken for click traps.
+- Removed an overly broad network rule that could block regular site images.
+- Verified on 13 popular sites: the extension only blocked ad and tracking requests, never the page or anything it needs.
+
 ## License
 Public domain ([The Unlicense](LICENSE)). Copy, modify and distribute it freely; no copyright is claimed.

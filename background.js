@@ -14,9 +14,12 @@ const TRUSTED = [
   'telegram.me', 'reddit.com', 'pinterest.com', 'e-devlet.gov.tr', 'giris.turkiye.gov.tr',
   'turkiye.gov.tr', 'youtube.com', 'www.youtube.com'
 ];
-// Redirect and ad domains that should never open as a new tab.
+// Ad networks and pay-per-click link shorteners that should never open as a
+// new tab. General-purpose shorteners (bit.ly, rebrand.ly, ...) are not listed:
+// people share them in emails and posts; ad tabs through them are still caught
+// by the click checks below.
 const BLOCKED = [
-  'rebrand.ly', 'bit.ly', 'cutt.ly', 'shorturl.at', 'ouo.io', 'shrinkme.io', 'adf.ly',
+  'ouo.io', 'shrinkme.io', 'adf.ly',
   'linkvertise.com', 'herdembilgiler.com', 'popads.net', 'popcash.net', 'propellerads.com',
   'onclickads.net', 'adsterra.com', 'exoclick.com', 'hilltopads.net', 'clickadu.com',
   'adcash.com', 'monetag.com', 'trafficstars.com', 'juicyads.com'
@@ -26,8 +29,10 @@ const BLOCKED = [
 // ("bahis" and "kumar" are the Turkish words for betting and gambling).
 const GAMBLING = /(^|\.)[a-z]*(bet|casino|bahis|slot|bonus|kumar)[a-z]*\d{2,}\.[a-z]{2,}$/;
 
-const CLICK_WINDOW = 1500; // ms – a new tab must open within this time to count as caused by a click
+const CLICK_WINDOW = 3000; // ms – a new tab must open within this time to count as caused by a click
+const CONTEXT_WINDOW = 120000; // ms – "Open link in new tab" from the right-click menu
 const lastClick = new Map(); // tabId -> {t, trap, intent, href, frameUrl}
+const lastContext = new Map(); // tabId -> {t, href}: link the user right-clicked
 
 const host = (u) => { try { return new URL(u).hostname.toLowerCase(); } catch (e) { return ''; } };
 const matches = (h, list) => list.some((d) => h === d || h.endsWith('.' + d));
@@ -65,6 +70,8 @@ chrome.runtime.onMessage.addListener((m, sender) => {
       href: m.href || (same ? prev.href : null),
       frameUrl: m.frameUrl
     });
+  } else if (m.t === 'context') {
+    lastContext.set(tabId, { t: Date.now(), href: m.href });
   } else if (m.t === 'overlay') {
     count(tabId, 'overlays');
   }
@@ -79,6 +86,10 @@ async function isAd(sourceTab, targetUrl, win) {
   if (matches(targetHost, BLOCKED) || GAMBLING.test(targetHost)) return true;
   if (matches(targetHost, TRUSTED)) return false;
   if (sameSite(sourceHost, targetHost)) return false;
+
+  // The user right-clicked this link and chose "Open link in new tab".
+  const ctx = lastContext.get(sourceTab.id);
+  if (ctx && Date.now() - ctx.t < CONTEXT_WINDOW && host(ctx.href) === targetHost) return false;
 
   // Tiny windows such as 5x5 exist only to host ads.
   if (win && win.type === 'popup' && (win.width < 120 || win.height < 120)) return true;
@@ -185,6 +196,7 @@ chrome.tabs.onUpdated.addListener((tabId, info) => {
 
 chrome.tabs.onRemoved.addListener((tabId) => {
   lastClick.delete(tabId);
+  lastContext.delete(tabId);
   pending.delete(tabId);
   lastSpawn.delete(tabId);
   lastPage.delete(tabId);

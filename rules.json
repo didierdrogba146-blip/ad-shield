@@ -505,30 +505,6 @@
   }
  },
  {
-  "id": 18,
-  "priority": 1,
-  "action": {
-   "type": "block"
-  },
-  "condition": {
-   "urlFilter": "/banners/",
-   "domainType": "thirdParty",
-   "resourceTypes": [
-    "script",
-    "sub_frame",
-    "image",
-    "media",
-    "xmlhttprequest",
-    "object",
-    "ping",
-    "stylesheet",
-    "font",
-    "websocket",
-    "other"
-   ]
-  }
- },
- {
   "id": 19,
   "priority": 1,
   "action": {
@@ -723,7 +699,8 @@
     "stylesheet",
     "font",
     "other"
-   ]
+   ],
+   "domainType": "thirdParty"
   }
  },
  {
